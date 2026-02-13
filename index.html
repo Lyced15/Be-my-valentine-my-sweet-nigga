@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Be My Valentine ❤️</title>
+
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&family=Pacifico&display=swap" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        overflow: hidden;
+        font-family: 'Poppins', sans-serif;
+        background: linear-gradient(135deg, #ffe6f0, #ffccd5, #ffffff);
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+    }
+
+    h1 {
+        font-family: 'Pacifico', cursive;
+        color: #d6336c;
+        font-size: 3rem;
+    }
+
+    #gameContainer, #proposalContainer {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+    }
+
+    #counter {
+        position: absolute;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-weight: 600;
+        font-size: 1.2rem;
+        color: #b03060;
+    }
+
+    .heart {
+        position: absolute;
+        font-size: 50px;
+        cursor: pointer;
+        user-select: none;
+        transition: transform 0.1s;
+    }
+
+    .heart:active {
+        transform: scale(1.2);
+    }
+
+    #proposalContainer {
+        display: none;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        animation: fadeIn 1.2s ease forwards;
+    }
+
+    .buttons {
+        margin-top: 30px;
+        position: relative;
+    }
+
+    button {
+        padding: 15px 30px;
+        font-size: 1.2rem;
+        border: none;
+        border-radius: 30px;
+        cursor: pointer;
+        margin: 10px;
+        transition: 0.3s ease;
+        position: absolute;
+    }
+
+    #yesBtn {
+        background: #28a745;
+        color: white;
+        font-weight: bold;
+        animation: pulse 1.5s infinite;
+        position: relative;
+    }
+
+    #noBtn {
+        background: #dc3545;
+        color: white;
+    }
+
+    @keyframes pulse {
+        0% { transform: scale(1); }
+        50% { transform: scale(1.1); }
+        100% { transform: scale(1); }
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    #sweetMessage {
+        margin-top: 20px;
+        font-size: 1.5rem;
+        color: #d6336c;
+        display: none;
+    }
+
+    #formLink {
+        display: none;
+        margin-top: 15px;
+        font-weight: 600;
+        color: #b03060;
+        text-decoration: none;
+    }
+
+    .confetti {
+        position: fixed;
+        width: 10px;
+        height: 10px;
+        background-color: red;
+        top: -10px;
+        animation: fall 3s linear forwards;
+    }
+
+    @keyframes fall {
+        to {
+            transform: translateY(100vh) rotate(360deg);
+            opacity: 0;
+        }
+    }
+</style>
+</head>
+<body>
+
+<div id="gameContainer">
+    <div id="counter">Hearts Caught: 0/5</div>
+    <div class="heart" id="heart">❤️</div>
+</div>
+
+<div id="proposalContainer">
+    <h1>Will you be my Valentine?</h1>
+    <div class="buttons">
+        <button id="yesBtn">Yes 💖</button>
+        <button id="noBtn">No 😢</button>
+    </div>
+    <div id="sweetMessage">Best decision you ever made! See you at 7 PM 💕</div>
+    <a id="formLink" href="PASTE_YOUR_GOOGLE_FORM_LINK_HERE" target="_blank">
+        Click here to confirm 💌
+    </a>
+</div>
+
+<script>
+    const heart = document.getElementById("heart");
+    const counterText = document.getElementById("counter");
+    const gameContainer = document.getElementById("gameContainer");
+    const proposalContainer = document.getElementById("proposalContainer");
+    const yesBtn = document.getElementById("yesBtn");
+    const noBtn = document.getElementById("noBtn");
+    const sweetMessage = document.getElementById("sweetMessage");
+    const formLink = document.getElementById("formLink");
+
+    let count = 0;
+    let x = 100, y = 100;
+    let dx = 3, dy = 3;
+
+    function moveHeart() {
+        const width = window.innerWidth - 50;
+        const height = window.innerHeight - 50;
+
+        x += dx;
+        y += dy;
+
+        if (x <= 0 || x >= width) dx *= -1;
+        if (y <= 0 || y >= height) dy *= -1;
+
+        heart.style.left = x + "px";
+        heart.style.top = y + "px";
+
+        requestAnimationFrame(moveHeart);
+    }
+
+    heart.addEventListener("click", () => {
+        count++;
+        counterText.innerText = `Hearts Caught: ${count}/5`;
+        if (count >= 5) {
+            gameContainer.style.display = "none";
+            proposalContainer.style.display = "flex";
+        }
+    });
+
+    moveHeart();
+
+    noBtn.addEventListener("mouseover", () => {
+        const maxX = window.innerWidth - noBtn.offsetWidth;
+        const maxY = window.innerHeight - noBtn.offsetHeight;
+        noBtn.style.left = Math.random() * maxX + "px";
+        noBtn.style.top = Math.random() * maxY + "px";
+    });
+
+    noBtn.addEventListener("click", () => {
+        alert("Error: Wrong Answer. Try again.");
+    });
+
+    yesBtn.addEventListener("click", () => {
+        launchConfetti();
+        sweetMessage.style.display = "block";
+        formLink.style.display = "inline-block";
+    });
+
+    function launchConfetti() {
+        for (let i = 0; i < 100; i++) {
+            const confetti = document.createElement("div");
+            confetti.classList.add("confetti");
+            confetti.style.left = Math.random() * window.innerWidth + "px";
+            confetti.style.backgroundColor = randomColor();
+            confetti.style.animationDuration = (Math.random() * 2 + 2) + "s";
+            document.body.appendChild(confetti);
+
+            setTimeout(() => confetti.remove(), 3000);
+        }
+    }
+
+    function randomColor() {
+        const colors = ["#ff4d6d", "#ff99c8", "#ffccd5", "#ffffff", "#ff5d8f"];
+        return colors[Math.floor(Math.random() * colors.length)];
+    }
+</script>
+
+</body>
+</html>
